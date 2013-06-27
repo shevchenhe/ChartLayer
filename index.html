@@ -1,0 +1,116 @@
+<!DOCTYPE HTML>
+<html>
+  
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=7" />
+    <!--The viewport meta tag is used to improve the presentation and behavior
+    of the samples on iOS devices-->
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"
+    />
+    <title>Info Window with Chart</title>
+    <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.0/js/dojo/dijit/themes/claro/claro.css">
+    <style>
+      html, body {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        padding:0;
+      }
+      .chart {
+        width:200px;
+        height:200px;
+        padding:0px !important;
+      }
+    </style>
+    <script type="text/javascript">
+        var pathRegex = new RegExp(/\/[^\/]+$/);
+        var locationPath = location.pathname.replace(pathRegex, '');
+        // Dojo Config
+        var dojoConfig = {
+            parseOnLoad: true,
+            baseUrl:"/jsapi/arcgis_js_api/library/3.0/jsapi/js/dojo/dojo",
+            packages: [
+            {
+                name: "SggChart",
+                location: locationPath + '/sggchart'
+            }
+            ]
+        };
+    </script>
+    <script type="text/javascript" src="../../jsapi/arcgis_js_api/library/3.0/jsapi/"></script>
+    <script type="text/javascript">
+      dojo.require("dijit.layout.BorderContainer");
+      dojo.require("dijit.layout.ContentPane");
+      dojo.require("esri.map");
+      dojo.require("esri.layers.FeatureLayer");
+      dojo.require("dojox.charting.Chart2D");
+      dojo.require("dojox.charting.plot2d.Pie");
+      dojo.require("dojox.charting.action2d.Highlight");
+      dojo.require("dojox.charting.action2d.MoveSlice");
+      dojo.require("dojox.charting.action2d.Tooltip");
+      dojo.require("SggChart.SggChartGraphics");
+      dojo.require("SggChart.SggChartLayer");
+
+      var map,chartLayer;
+
+
+      function init() {
+  var initExtent = new esri.geometry.Extent({
+    "xmin": 12581094.03809235,
+    "ymin": 4669385.183883626,
+    "xmax": 14635721.358397333,
+    "ymax": 5518141.945961993,
+    "spatialReference": {
+      "wkid": 102100
+    }
+  });
+      map = new esri.Map("map",{extent:initExtent});
+
+        //Add the world imagery to the map. View the ArcGIS Online site for services http://arcgisonline/home/search.html?t=content&f=typekeywords:service    
+        var basemap = new esri.layers.ArcGISTiledMapServiceLayer("http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer");
+        map.addLayer(basemap);
+
+        var statesLayer = new esri.layers.FeatureLayer("http://192.168.220.170:8399/arcgis/rest/services/HCTEST/liaoling/MapServer/0", {
+          mode: esri.layers.FeatureLayer.MODE_ONDEMAND,
+          outFields: ["*"]
+        });
+        //statesLayer.setDefinitionExpression("NAME = '沈阳市' or Name='大连市' or Name='锦州市'");
+        var symbol = new esri.symbol.SimpleFillSymbol();
+        statesLayer.setRenderer(new esri.renderer.SimpleRenderer(symbol));
+        chartLayer =new sggchart.SggChartLayer({displayOnPan:false});
+        map.addLayer(chartLayer);
+        dojo.connect(statesLayer,"onGraphicAdd",function(addgraphic){
+          //debugger;
+          var tmepchartgraphic=new sggchart.SggPieChart(addgraphic);
+          tmepchartgraphic.setId("id"+addgraphic.attributes.CODE);
+          var series=[tmepchartgraphic.attributes.Male,tmepchartgraphic.attributes.Female];
+          tmepchartgraphic.setSeries(series);
+          chartLayer.add(tmepchartgraphic);
+          console.log("Graphic Added");
+        });
+        map.addLayer(statesLayer);
+        
+        map.infoWindow.resize(275, 275);
+
+        dojo.connect(map, 'onLoad', function (theMap) {
+          //resize the map when the browser resizes
+          dojo.connect(dijit.byId('map'), 'resize', map, map.resize);
+        });
+      }
+
+      dojo.addOnLoad(init);
+    </script>
+  </head>
+  
+  <body class="claro">
+    <div id="mainWindow" dojotype="dijit.layout.BorderContainer" design="headline"
+    gutters="false" style="width: 100%; height: 100%; margin: 0;">
+      <div id="map" dojotype="dijit.layout.ContentPane" region="center" style="overflow:hidden;"></div>
+    </div>
+  </body>
+
+</html>
