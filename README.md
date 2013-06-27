@@ -6,5 +6,5 @@ ChartLayer»ùÓÚArcGIS JavaScript API½øĞĞÀ©Õ¹µÄÒ»¸öÍ¼²ãÀàĞÍ£¬Ö÷ÒªÓÃÀ´ÊµÏÖÊôĞÔĞÅÏ¢Í
 ## Ğ§¹û
 Ğ§¹ûÈçÏÂÍ¼ËùÊ¾£º
 
-![demo](demo.jpg)
+![demo](http://ww1.sinaimg.cn/large/701ee609jw1e62im2p47nj212u0t5amg.jpg)
 
