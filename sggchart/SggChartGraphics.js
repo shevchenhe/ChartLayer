@@ -11,7 +11,7 @@ dojo.require("dojox.charting.widget.Legend");
 //dojo.require("dojo.Stateful");
 
 
-dojo.declare("sggchart.SggChartGraphics", [esri.Graphic,dojo.Stateful], {
+dojo.declare("sggchart.SggChartGraphics", esri.Graphic, {
 	bindGraphic: null,
 	parentDiv: null,
 	series: null,

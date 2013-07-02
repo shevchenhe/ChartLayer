@@ -5,25 +5,25 @@ dojo.require("dojo.Stateful");
 
 dojo.declare("sggchart.SggChartLayer", esri.layers.GraphicsLayer, {
     divid: null,
-    bindGraphicLayer:null,
-    constructor:function(params){
-        dojo.mixin(this,params);
+    bindGraphicLayer: null,
+    constructor: function(params) {
+        dojo.mixin(this, params);
     },
     setDivId: function(id) {
         this.divid = id;
     },
     _draw: function(graphic, redraw, zoomFlag) {
-        var that=this;
+        var that = this;
         if (!this._map) {
             return;
         }
 
         if (graphic instanceof sggchart.SggPieChart) {
             //if (!zoomFlag) {
-                this._drawChart(graphic, zoomFlag);
-           // } else {
+            this._drawChart(graphic, zoomFlag);
+            // } else {
             //    dojo.connect(that.bindGraphicLayer,"onUpdateEnd",dojo.hitch(that,that._drawChart,graphic, zoomFlag)
-          //  }
+            //  }
         }
     },
     hide: function() {
@@ -60,25 +60,34 @@ dojo.declare("sggchart.SggChartLayer", esri.layers.GraphicsLayer, {
         //   this.onUpdate();
         // }
     },
-    _onZoomStartHandler:function(){
-        this.hide();
-    },
     _refresh: function(redraw, zoomFlag) {
+        var that=this;
         var gs = this.graphics,
             il = gs.length,
             i,
             _draw = this._draw;
         if (!redraw) {
-            for (i = 0; i < gs.length; i++) {
-                _draw(gs[i], redraw, zoomFlag);
-                //this.remove(gs[i]);
-            }
+            dojo.connect(this.bindGraphicLayer, "onUpdate", dojo.hitch(that,function() {
+                for (i = 0; i < gs.length; i++) {
+                    _draw(gs[i], redraw, zoomFlag);
+                    //this.remove(gs[i]);
+                }
+                this.show();
+            }));
+
         } else {
-            for (i = 0; i < gs.length; i++) {
-                _draw(gs[i], redraw, zoomFlag);
-            }
+            dojo.connect(this.bindGraphicLayer, "onUpdate", dojo.hitch(that,function() {
+                for (i = 0; i < gs.length; i++) {
+                    _draw(gs[i], redraw, zoomFlag);
+                    //this.remove(gs[i]);
+                }
+                this.show();
+            }));
         }
-        this.show();
+        //this.show();
+    },
+    _onZoomStartHandler:function(){
+        this.hide();
     },
     _onExtentChangeHandler: function(extent, delta, levelChange, lod) {
         if (levelChange) {
@@ -126,7 +135,7 @@ dojo.declare("sggchart.SggChartLayer", esri.layers.GraphicsLayer, {
                 var svgtransform = svgDojoShape.parent.matrix;
                 var piedivx = svgx + svgtransform.dx;
                 var piedivy = svgy + svgtransform.dy;
-                if (!piegraphic.parentDiv||zoomFlag) {
+                if (!piegraphic.parentDiv || zoomFlag) {
                     var piediv = dojo.doc.createElement("div");
                     dojo.style(piediv, {
                         "left": piedivx + "px",
@@ -154,6 +163,8 @@ dojo.declare("sggchart.SggChartLayer", esri.layers.GraphicsLayer, {
                         "z-index": "100"
                     });
                 }
+            } else {
+
             }
 
 
@@ -161,7 +172,7 @@ dojo.declare("sggchart.SggChartLayer", esri.layers.GraphicsLayer, {
             //} else if (!piegraphic.bindGraphic._shape && piegraphic.parentDiv) {
         } else {
             dojo.byId(this.divid).removeChild(piegraphic.parentDiv);
-            piegraphic.parentDiv=null;
+            piegraphic.parentDiv = null;
             //this.remove(piegraphic);
         }
 

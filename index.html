@@ -53,14 +53,15 @@ dojo.require("dijit.layout.BorderContainer");
         dojo.require("dojox.charting.action2d.MoveSlice");
         dojo.require("dojox.charting.action2d.Tooltip");
         dojo.require("SggChart.SggChartGraphics");
-        dojo.require("SggChart.SggChartLayer");
+        dojo.require("SggChart.SggChartLayerForFeatureLayer");
 
         var map,chartLayer,statesLayer,conn;
 
-        function doquery(){
+        /*function doquery(){
             var queryTask= new esri.tasks.QueryTask("http://192.168.220.170:8399/arcgis/rest/services/HCTEST/liaoling/MapServer/0");
             var query=new esri.tasks.Query();
-            query.where="NAME = '沈阳市' or Name='大连市' or Name='锦州市'";
+            //query.where="NAME = '沈阳市' or Name='大连市' or Name='锦州市'";
+            query.where="1=1";
             query.outFields=['*'];
             query.returnGeometry = true;
         query.outSpatialReference = map.spatialReference;
@@ -85,7 +86,7 @@ dojo.require("dijit.layout.BorderContainer");
           chartLayer.add(tmepchartgraphic);
           console.log("Graphic Added");            
         });
-        }
+        }*/
 
 
 
@@ -106,8 +107,8 @@ dojo.require("dijit.layout.BorderContainer");
         var basemap = new esri.layers.ArcGISTiledMapServiceLayer("http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer");
         map.addLayer(basemap);
 
-/*        statesLayer = new esri.layers.FeatureLayer("http://192.168.220.170:8399/arcgis/rest/services/HCTEST/liaoling/MapServer/0", {
-          mode: esri.layers.FeatureLayer.ONDEMAND,
+        statesLayer = new esri.layers.FeatureLayer("http://192.168.220.170:8399/arcgis/rest/services/HCTEST/liaoling/MapServer/0", {
+          mode: esri.layers.FeatureLayer.MODE_SNAPSHOT,
           outFields: ["*"]
         });
         statesLayer.setDefinitionExpression("NAME = '沈阳市' or Name='大连市' or Name='锦州市'");
@@ -125,12 +126,12 @@ dojo.require("dijit.layout.BorderContainer");
           console.log("Graphic Added");          
         });
         //dojo.connect(statesLayer,"onGraphicAdd",function(){console.log("added")});
-        map.addLayer(statesLayer);*/
+        map.addLayer(statesLayer);
         map.infoWindow.resize(275, 275);
 
         dojo.connect(map, 'onLoad', function (theMap) {
           //resize the map when the browser resizes
-          doquery();
+          //doquery();
           dojo.connect(dijit.byId('map'), 'resize', map, map.resize);
         });
         }
