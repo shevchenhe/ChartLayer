@@ -8,8 +8,10 @@ dojo.require("dojox.charting.themes.CubanShirts");
 dojo.require("dojox.charting.action2d.MoveSlice");
 dojo.require("dojox.charting.action2d.Tooltip");
 dojo.require("dojox.charting.widget.Legend");
+//dojo.require("dojo.Stateful");
 
-dojo.declare("sggchart.SggChartGraphics", esri.Graphic, {
+
+dojo.declare("sggchart.SggChartGraphics", [esri.Graphic,dojo.Stateful], {
 	bindGraphic: null,
 	parentDiv: null,
 	series: null,
@@ -58,12 +60,15 @@ dojo.declare("sggchart.SggChartGraphics", esri.Graphic, {
 });
 
 dojo.declare("sggchart.SggPieChart", sggchart.SggChartGraphics, {
+	watchobject:null,
 	constructor: function(graphic) {
 		dojo.mixin(this, {
 			bindGraphic: graphic
 		});
+		//var tempwatch=new dojo.Stateful();
+		//this.watchobject=tempwatch;
 	},
-	
+
 	_draw: function(divContainer) {
 		var _chart = new dojox.charting.Chart(divContainer);
 		//var r = this.divWidth / 2;
